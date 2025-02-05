@@ -55,6 +55,8 @@ train_dataset = train_dataset.map(tokenize_fn, batched=True)
 test_dataset = test_dataset.map(tokenize_fn, batched=True)
 
 training_args = SentenceTransformerTrainingArguments(
+    report_to="wandb",
+    run_name="e5-medical",
     output_dir="./results",
     evaluation_strategy="epoch",  
     save_strategy="epoch",
@@ -69,7 +71,7 @@ training_args = SentenceTransformerTrainingArguments(
     logging_steps=10,
     fp16=True,  
     save_total_limit=2
-)   
+)
 
 trainer = SentenceTransformerTrainer(
     model=model,
@@ -78,3 +80,6 @@ trainer = SentenceTransformerTrainer(
     eval_dataset=test_dataset,
     loss=train_loss
 )
+
+trainer.train()
+trainer.save_model("./e5_large_finetuned")
