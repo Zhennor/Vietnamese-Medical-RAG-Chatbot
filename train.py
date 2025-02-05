@@ -1,63 +1,80 @@
 import json
 import torch
-from torch.utils.data import DataLoader, Dataset
-from transformers import AutoTokenizer, get_cosine_schedule_with_warmup
-from sentence_transformers import losses, SentenceTransformer, InputExample
-from torch.optim import AdamW
+from datasets import Dataset
+from transformers import AutoTokenizer
+from sentence_transformers import SentenceTransformerTrainingArguments
+from sentence_transformers import SentenceTransformer, losses, InputExample
+from sentence_transformers import SentenceTransformerTrainer
 
 
-MODEL_NAME = "intfloat/e5-large"
-BATCH_SIZE = 16 
-EPOCHS = 5
-LEARNING_RATE = 2e-5
-WEIGHT_DECAY = 0.01
-WARMUP_RATIO = 0.1  
-GRADIENT_ACCUMULATION_STEPS = 2  
-FP16 = True  
+def load_dataset(file_path):
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-class MedicalDataset(Dataset):
-    def __init__(self, file_path):
-        self.data = json.load(open(file_path, "r", encoding="utf-8"))
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        sample = self.data[idx]
+    examples = []
+    for sample in data:
         question = sample["question"]
         true_context = sample["true_context"]
         negatives = sample["negatives"]
         
-        return InputExample(texts=[question, true_context] + negatives)
+        pos_example = {
+            "texts": [question, true_context],  
+            "label": 1.0  
+        }
+        examples.append(pos_example)
+        
+        for negative in negatives:
+            neg_example = {
+                "texts": [question, negative],  
+                "label": 0.0  
+            }
+            examples.append(neg_example)
+            
+    return Dataset.from_list(examples)
 
+train_dataset = load_dataset("/kaggle/input/medical-data/medical_train.json")
+test_dataset = load_dataset("/kaggle/input/medical-data/medical_test.json")
+
+MODEL_NAME = "intfloat/e5-large"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = SentenceTransformer(MODEL_NAME)
 
-train_dataset = MedicalDataset("/kaggle/input/medical-data/medical_train.json")
-train_dataloader = DataLoader(
-    train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, pin_memory=True
-)
+train_loss = losses.MultipleNegativesRankingLoss(model)
 
-temperature = 0.07  
-train_loss = losses.ContrastiveLoss(model, margin=temperature)
-
-optimizer = AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY, correct_bias=True)
-num_training_steps = len(train_dataloader) * EPOCHS
-num_warmup_steps = int(WARMUP_RATIO * num_training_steps)
-scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps, num_training_steps)
-
-for epoch in range(EPOCHS):
-    torch.cuda.empty_cache()  
-    model.fit(
-        train_objectives=[(train_dataloader, train_loss)],
-        epochs=1,
-        warmup_steps=num_warmup_steps,
-        optimizer_class=AdamW,
-        optimizer_params={'lr': LEARNING_RATE, 'weight_decay': WEIGHT_DECAY, 'correct_bias': True},
-        scheduler=scheduler,
-        gradient_accumulation_steps=GRADIENT_ACCUMULATION_STEPS,
-        use_amp=FP16  
+def tokenize_fn(examples):
+    inputs = tokenizer(
+        examples["texts"], 
+        padding="max_length",
+        truncation=True,
+        max_length=512,
+        return_tensors="pt"
     )
-    print(f"Epoch {epoch+1} completed.")
+    return inputs
+    
+train_dataset = train_dataset.map(tokenize_fn, batched=True)
+test_dataset = test_dataset.map(tokenize_fn, batched=True)
 
-model.save("./e5_large_finetuned")
+training_args = SentenceTransformerTrainingArguments(
+    output_dir="./results",
+    evaluation_strategy="epoch",  
+    save_strategy="epoch",
+    per_device_train_batch_size=16, 
+    per_device_eval_batch_size=8,
+    gradient_accumulation_steps=2,  
+    learning_rate=5e-5,
+    weight_decay=1e-4,
+    num_train_epochs=3,
+    warmup_steps=500,
+    logging_dir="./logs",
+    logging_steps=10,
+    fp16=True,  
+    save_total_limit=2
+)   
+
+trainer = SentenceTransformerTrainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_dataset,
+    eval_dataset=test_dataset,
+    loss=train_loss
+)
