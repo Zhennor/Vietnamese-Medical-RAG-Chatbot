@@ -38,7 +38,8 @@ train_dataloader = DataLoader(
     train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, pin_memory=True
 )
 
-train_loss = losses.MultipleNegativesRankingLoss(model)
+temperature = 0.07  
+train_loss = losses.ContrastiveLoss(model, margin=temperature)
 
 optimizer = AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY, correct_bias=True)
 num_training_steps = len(train_dataloader) * EPOCHS
