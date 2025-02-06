@@ -23,6 +23,6 @@ def split_medical_corpus(input_file: str, output_file: str, chunk_size: int = 40
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(chunks_data, f, ensure_ascii=False, indent=4)
 
-    print(f"✅ Đã lưu dữ liệu chunked vào file '{output_file}'")
+    print(f"Đã lưu dữ liệu chunked vào file '{output_file}'")
 
 split_medical_corpus('../data/medical_corpus.json', 'corpus_chunked.json')
