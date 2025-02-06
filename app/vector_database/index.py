@@ -14,7 +14,7 @@ if __name__ == "__main__":
         api_key=QDRANT_API_KEY,
         collection_name=COLLECTION_NAME,
         model_embedding = MODEL_EMBEDDING,
-        force_recreate=True  
+        force_recreate=False  
         )
 
 

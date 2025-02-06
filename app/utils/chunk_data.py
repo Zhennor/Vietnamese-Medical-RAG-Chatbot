@@ -25,4 +25,4 @@ def split_medical_corpus(input_file: str, output_file: str, chunk_size: int = 40
 
     print(f"✅ Đã lưu dữ liệu chunked vào file '{output_file}'")
 
-split_medical_corpus('../data/medical_corpus.json', 'template.json')
+split_medical_corpus('../data/medical_corpus.json', 'corpus_chunked.json')
