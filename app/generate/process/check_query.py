@@ -50,7 +50,7 @@ class QueryRouter:
                 
                 thì trả ra 3.
 
-                **Lưu ý**: Chỉ trả ra '0', '1' hoặc '2'. Không được thêm bất kỳ ký tự nào hay lời giải thích nào!
+                **Lưu ý**: Chỉ trả ra '0', '1', '2' hoặc '3'. Không được thêm bất kỳ ký tự nào hay lời giải thích nào!
                 """)
             ]
         )

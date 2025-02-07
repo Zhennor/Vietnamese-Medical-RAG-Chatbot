@@ -81,5 +81,13 @@ class QdrantDB:
         ]
         return documents
 
-    def search_documents(self, query: str, k: int = 5) -> List[Document]:
-        return self.vector_store.similarity_search(query=query, k=k)
+    def search_documents(self, query: str, k: int = 5) -> List[dict]:
+        results = self.vector_store.similarity_search(query=query, k=k)
+        
+        documents = [
+            {
+                'id': doc.metadata.get('chunk_id', ''),
+                'content': doc.page_content
+            } for doc in results
+        ]
+        return documents

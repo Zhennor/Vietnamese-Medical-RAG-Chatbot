@@ -1,6 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
-from app.query.dto.query import Query
 from langchain.prompts import ChatPromptTemplate
 from app.generate.gemini.reset_api_key import APIKeyManager
 
@@ -9,7 +8,7 @@ class ResponseIntroduction:
         self.model_gemini = model_gemini
         self.api_key = api_key
 
-    def build_prompt_introduction(self, original_query: Query) -> ChatPromptTemplate:
+    def build_prompt_introduction(self, original_query: str) -> ChatPromptTemplate:
         prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", """
@@ -47,13 +46,13 @@ class ResponseIntroduction:
                 - Sử dụng ngôn ngữ chuyên nghiệp, ngắn gọn.
                 - Không sử dụng các ký tự như '##', '```'.
                 """),
-                ("human", f"""Câu hỏi của người dùng là: "{original_query.query}". 
+                ("human", f"""Câu hỏi của người dùng là: "{original_query}". 
                 Hãy dựa trên các quy tắc và hướng dẫn trên để đưa ra câu trả lời phù hợp nhất.""")
             ]
         )
         return prompt
 
-    def response_introduction(self, original_query: Query) -> str:
+    def response_introduction(self, original_query: str) -> str:
         print("Đã vô agent trả lời giới thiệu y tế!")
         model_gemini = ChatGoogleGenerativeAI(
             google_api_key=self.api_key.get_next_key(),
@@ -63,5 +62,5 @@ class ResponseIntroduction:
         )
         prompt = self.build_prompt_introduction(original_query)
         response = prompt | model_gemini | StrOutputParser()
-        final_response = response.invoke({"original_query": original_query.query}).strip()
+        final_response = response.invoke({"original_query": original_query}).strip()
         return final_response

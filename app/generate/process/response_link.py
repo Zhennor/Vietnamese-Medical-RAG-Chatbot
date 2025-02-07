@@ -3,7 +3,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
 from langchain.prompts import ChatPromptTemplate
 from app.etl.etl import LinkDataExtractor
-from app.rerank.cohere import Cohere
+from app.rerank.cohere_rerank import Cohere
 
 class LinkReranker:
     def __init__(self, key_manager: APIKeyManager, model: str, model_reranker: Cohere):
@@ -53,7 +53,7 @@ class LinkReranker:
         extractor = LinkDataExtractor(query=original_query)
         extractor.run()
         
-        reranked_links = self.model_reranker.rerank_links_with_documents(original_query, extractor.get_results())
+        reranked_links = self.model_reranker.rerank_documents(original_query, extractor.get_results())
 
         response_chain = self.built_response_prompt_links(original_query, reranked_links) | model_gemini | StrOutputParser()
 

@@ -37,7 +37,7 @@ class QueryGenerator:
                 "   + 'Vaccine COVID-19 bảo vệ bạn bằng cách nào?'"
                 "   + 'Làm sao vaccine COVID-19 giúc phòng ngừa bệnh?'"
                 ),
-                ("human", f"Vui lòng tạo ra 4 câu truy vấn tìm kiếm liên quan nhất đến: {original_query}. Chỉ trả về 4 câu truy vấn, không giải thích gì thêm.")
+                ("human", f"Vui lòng tạo ra 4 câu truy vấn tìm kiếm liên quan nhất đến: {original_query}. Chỉ trả về 4 câu truy vấn và không có kí tự ở trước như trong ví dụ , không giải thích gì thêm.")
             ]
         )
         return prompt

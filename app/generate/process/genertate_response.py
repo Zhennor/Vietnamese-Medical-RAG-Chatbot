@@ -10,7 +10,7 @@ class ResponseGenerator:
         self.model=model
         
     def build_response_prompt(self, original_query, context):
-        context = "\n".join([doc for doc, _,_ in context])
+        context = "\n".join([doc['content'] for doc in context if 'content' in doc])
         prompt = ChatPromptTemplate.from_messages(
             [
                 ("system",

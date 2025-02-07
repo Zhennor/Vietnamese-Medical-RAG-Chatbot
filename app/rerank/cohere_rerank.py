@@ -1,42 +1,35 @@
 import cohere
-from typing import List, Tuple, Dict
+from typing import List, Dict
 from dotenv import load_dotenv
 import os
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer, util
+from app.generate.gemini.reset_api_key import APIKeyManager
 
 load_dotenv()
 COHERE_API_KEY = os.getenv('COHERE_API_KEY')
 RERANK_MODEL = os.getenv('RERANK_MODEL')
 
-
 class Cohere:
-    def __init__(self, api_key: str, cohere_model: str):
+    def __init__(self, api_key_manager: APIKeyManager, cohere_model: str, model_embedding : str):
+        api_key = api_key_manager.get_next_key()
         self.client = cohere.Client(api_key)
         self.cohere_model = cohere_model
+        self.embedding_model = SentenceTransformer(model_embedding) 
 
-    def rerank_documents(self, query: str, documents: List[str]) -> List[Tuple[str, float]]:
-        try:
-            response = self.client.rerank(
-                model=self.cohere_model,
-                query=query,
-                documents=documents,
-                top_n=5
-            )
-            
-            reranked_documents = [
-                (documents[res.index], res.relevance_score) for res in response.results
-            ]
-            
-        except Exception as e:
-            print(f"Error during reranking: {e}")
-            reranked_documents = []
+    def rerank_documents(self, query: str, documents: List[Dict[str, str]]) -> List[Dict[str, str]]:
+        valid_documents = [doc for doc in documents if isinstance(doc, dict) and doc.get('content', '').strip()]
 
-        return reranked_documents
-
-    def rerank_links_with_documents(self, query: str, documents: List[Dict[str, str]]) -> List[Dict[str, str]]:
-        doc_contents = [doc['content'] for doc in documents]
-        doc_links = [doc['link'] for doc in documents]
+        if not valid_documents:
+            print("No valid documents to rerank.")
+            return []
+        
+        doc_contents = [doc['content'] for doc in valid_documents]
+        doc_ids = [doc['id'] for doc in valid_documents]
 
         try:
+            # Cohere rerank
             response = self.client.rerank(
                 model=self.cohere_model,
                 query=query,
@@ -44,16 +37,36 @@ class Cohere:
                 top_n=5
             )
             
-            reranked_results = [
+            reranked_documents = [
                 {
-                    'link': doc_links[res.index],
+                    'id': doc_ids[res.index],
                     'content': doc_contents[res.index],
                     'score': res.relevance_score
                 }
                 for res in response.results
             ]
+
+            tfidf_vectorizer = TfidfVectorizer()
+            tfidf_matrix = tfidf_vectorizer.fit_transform(doc_contents)
+            query_tfidf = tfidf_vectorizer.transform([query])
+            scores_tfidf = cosine_similarity(query_tfidf, tfidf_matrix).flatten()
+
+            query_embedding = self.embedding_model.encode(query, convert_to_tensor=True)
+            doc_embeddings = self.embedding_model.encode(doc_contents, convert_to_tensor=True)
+            scores_cosine = util.pytorch_cos_sim(query_embedding, doc_embeddings).squeeze(0).cpu().numpy()
+
+            combined_scores = 0.7 * scores_cosine + 0.3 * scores_tfidf
+            
+            if all(score < 0.5 for score in combined_scores):
+                return 1
+            
+            for idx, doc in enumerate(reranked_documents):
+                doc['combined_score'] = combined_scores[idx]
+            
+            reranked_documents.sort(key=lambda x: x['combined_score'], reverse=True)
+            
         except Exception as e:
             print(f"Error during reranking: {e}")
-            reranked_results = []
+            return []
 
-        return reranked_results
+        return reranked_documents[:5]
