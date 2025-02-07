@@ -42,7 +42,7 @@ class QdrantDB:
 
     def _setup_vector_store(self) -> QdrantVectorStore:
         if self.force_recreate:
-            documents = self.load_documents("/kaggle/input/corpus/corpus_chunked.json")
+            documents = self.load_documents("../../data/preprocess/corpus_chunked.json")
             vector_store = QdrantVectorStore.from_documents(
                 documents=documents,
                 embedding=self.embeddings,
