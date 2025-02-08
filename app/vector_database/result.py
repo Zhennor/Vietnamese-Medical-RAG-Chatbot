@@ -43,7 +43,6 @@ def result_query(original_query):
 
         unique_docs = {doc['id']: doc for doc in all_docs}.values()
         result_rerank = model_reranker.rerank_documents(original_query, list(unique_docs))
-        print(result_rerank)
         if result_rerank == 1:
             response = model_gemini.generate_response_link(original_query, vector_db)
             return f"{response}"

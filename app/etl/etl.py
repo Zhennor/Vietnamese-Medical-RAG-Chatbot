@@ -52,7 +52,7 @@ class LinkDataExtractor:
     def get_results(self) -> List[dict]:
         return [{"link": link, "document": doc} for link, doc in zip(self.links, self.documents)]
 
-    def add_to_qdrant(self, qdrant_db, batch_size=100) -> int:
+    def add_to_qdrant(self, qdrant_db, batch_size=50) -> int:
         if not self.documents:
             self.run()
 
