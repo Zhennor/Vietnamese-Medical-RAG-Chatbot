@@ -90,36 +90,3 @@ class LinkDataExtractor:
             print(f"Lỗi khi thêm vào Qdrant: {e}")
             return 0
 
-import json
-from typing import List
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_qdrant import QdrantVectorStore, FastEmbedSparse, RetrievalMode
-from langchain_core.documents import Document
-from qdrant_client import QdrantClient
-from qdrant_client.http.models import Distance, VectorParams
-from app.vector_database.vector_db import QdrantDB
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-QDRANT_URL=os.getenv("QDRANT_URL")
-QDRANT_API_KEY=os.getenv("QDRANT_API_KEY")
-COLLECTION_NAME=os.getenv("COLLECTION_NAME")
-MODEL_EMBEDDING=os.getenv("MODEL_EMBEDDING")
-if __name__ == "__main__":
-    qdrant_search = QdrantDB(
-        url=QDRANT_URL,
-        api_key=QDRANT_API_KEY,
-        collection_name="NEW",
-        model_embedding = MODEL_EMBEDDING,
-        force_recreate=False  
-        )
-
-    extractor = LinkDataExtractor(query="bệnh tiểu đường")
-    num_docs = extractor.add_to_qdrant(qdrant_search, batch_size=100)
-    print(f"Đã thêm tổng cộng {num_docs} documents")
-
-    results = qdrant_search.search_documents("các biến chứng của bệnh tiểu đường", k=3)
-    for doc in results:
-        print(f"\nContent: {doc.page_content}")

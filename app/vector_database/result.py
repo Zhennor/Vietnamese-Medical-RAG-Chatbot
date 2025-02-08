@@ -58,6 +58,6 @@ def result_query(original_query):
     elif check_query_user == '3':
         return 'Xin lỗi bạn, tôi không được huấn luyện để trả lời câu hỏi này. Tôi chỉ hỗ trợ các câu hỏi liên quan đến y tế và sức khỏe.'
 
-query = "ung thư cách phòng tránh"
+query = "bệnh ung thư gan chữa như nào"
 result = result_query(query)
 print(result)

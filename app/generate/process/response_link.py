@@ -52,10 +52,7 @@ class LinkReranker:
         
         extractor = LinkDataExtractor(query=original_query)
         extractor.run()
-        
-        reranked_links = self.model_reranker.rerank_documents(original_query, extractor.get_results())
-
+        reranked_links = self.model_reranker.rerank_documents_with_links(original_query, extractor.get_results())
         response_chain = self.built_response_prompt_links(original_query, reranked_links) | model_gemini | StrOutputParser()
-
         final_response = response_chain.invoke({"original_query": original_query}).strip()
         return final_response
