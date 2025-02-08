@@ -67,18 +67,15 @@ class Cohere:
                 for res in response.results
             ]
 
-            # TF-IDF Similarity
             tfidf_vectorizer = TfidfVectorizer()
             tfidf_matrix = tfidf_vectorizer.fit_transform(doc_contents)
             query_tfidf = tfidf_vectorizer.transform([query])
             scores_tfidf = cosine_similarity(query_tfidf, tfidf_matrix).flatten()
 
-            # Cosine Similarity using Sentence Embeddings
             query_embedding = self.embedding_model.encode(query, convert_to_tensor=True)
             doc_embeddings = self.embedding_model.encode(doc_contents, convert_to_tensor=True)
             scores_cosine = util.pytorch_cos_sim(query_embedding, doc_embeddings).squeeze(0).cpu().numpy()
 
-            # Combining scores
             combined_scores = 0.7 * scores_cosine + 0.3 * scores_tfidf
 
             if not rerank_links and all(score < 0.5 for score in combined_scores):

@@ -1,23 +1,22 @@
-from langchain.llms import HuggingFacePipeline
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+import streamlit as st
+from app.vector_database.result import result_query
 
-model_name = "Viet-Mistral/Vistral-7B-Chat"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
+st.title("Chatbot Hỗ Trợ Y Tế")
 
-pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
 
-llm = HuggingFacePipeline(pipeline=pipe)
+user_input = st.text_input("Nhập câu hỏi của bạn:", "")
 
-prompt_template = "Hãy giải thích về {topic} một cách dễ hiểu."
+if st.button("Gửi"):
+    if user_input:
+        st.session_state.chat_history.append(("Bạn", user_input))
 
-prompt = PromptTemplate(input_variables=["topic"], template=prompt_template)
+        response = result_query(user_input)
+        st.session_state.chat_history.append(("Chatbot", response))
 
-chain = LLMChain(llm=llm, prompt=prompt)
-
-question = "machine learning"
-response = chain.run(question)
-
-print(response)
+for sender, message in st.session_state.chat_history:
+    if sender == "Bạn":
+        st.markdown(f"**{sender}:** {message}")
+    else:
+        st.markdown(f"**{sender}:** {message}")

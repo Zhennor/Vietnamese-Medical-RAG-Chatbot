@@ -27,5 +27,5 @@ class Gemini:
         return self.query_generator.generate_query(original_query)
     def generate_response(self, original_query: str, docs: List[Tuple]) -> str:
         return self.response_generator.generate_response(original_query, docs)
-    def generate_response_link(self,original_query:str):
-        return self.link_reranker.generate_response_links(original_query)
+    def generate_response_link(self,original_query:str, qdrantdb):
+        return self.link_reranker.generate_response_links(original_query, qdrantdb)

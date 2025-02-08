@@ -43,10 +43,10 @@ def result_query(original_query):
 
         unique_docs = {doc['id']: doc for doc in all_docs}.values()
         result_rerank = model_reranker.rerank_documents(original_query, list(unique_docs))
-
+        print(result_rerank)
         if result_rerank == 1:
-            response = model_gemini.generate_response_link(original_query)
-            return f"{response}\n\nTHÊM VÀO QDRANT"
+            response = model_gemini.generate_response_link(original_query, vector_db)
+            return f"{response}"
         else:
             response = model_gemini.generate_response(original_query, result_rerank)
             return response
@@ -58,6 +58,3 @@ def result_query(original_query):
     elif check_query_user == '3':
         return 'Xin lỗi bạn, tôi không được huấn luyện để trả lời câu hỏi này. Tôi chỉ hỗ trợ các câu hỏi liên quan đến y tế và sức khỏe.'
 
-query = "bệnh ung thư gan chữa như nào"
-result = result_query(query)
-print(result)

@@ -42,7 +42,7 @@ class LinkReranker:
         )
         return prompt
 
-    def generate_response_links(self, original_query: str) -> str:
+    def generate_response_links(self, original_query: str, qdrant_db ) -> str:
         model_gemini = ChatGoogleGenerativeAI(
             google_api_key=self.key_manager.get_next_key(),
             model=self.model,  
@@ -51,7 +51,7 @@ class LinkReranker:
         )
         
         extractor = LinkDataExtractor(query=original_query)
-        extractor.run()
+        extractor.run(qdrant_db)
         reranked_links = self.model_reranker.rerank_documents_with_links(original_query, extractor.get_results())
         response_chain = self.built_response_prompt_links(original_query, reranked_links) | model_gemini | StrOutputParser()
         final_response = response_chain.invoke({"original_query": original_query}).strip()
