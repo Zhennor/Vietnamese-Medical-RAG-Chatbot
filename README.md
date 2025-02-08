@@ -1,4 +1,3 @@
-# Vietnamese-Medical-RAG-Chatbot
 # Cài Đặt & Chạy Ứng Dụng Vietnamese-Medical-RAG-Chatbot
 
 ## 📌 Bước 1: Clone Repository
