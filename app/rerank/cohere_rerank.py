@@ -78,7 +78,7 @@ class Cohere:
 
             combined_scores = 0.8 * scores_cosine + 0.2 * scores_tfidf
 
-            if not rerank_links and all(score < 0.3 for score in combined_scores):
+            if not rerank_links and all(score < 0.4 for score in combined_scores):
                 return 1
 
             for idx, doc in enumerate(reranked_documents):
