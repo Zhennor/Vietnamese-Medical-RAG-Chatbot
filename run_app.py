@@ -1,6 +1,6 @@
 import streamlit as st
 from app.vector_database.result import result_query
-from db_utils import init_db, save_message, get_chat_history
+from db_utils import init_db, save_message, get_chat_history, load_conversation_messages
 from datetime import datetime
 import uuid
 
@@ -58,66 +58,48 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-if 'conversations' not in st.session_state:
-    st.session_state.conversations = {}
 if 'current_conversation' not in st.session_state:
     st.session_state.current_conversation = None
 
 with st.sidebar:
     if st.button("New Chat"):
         new_conv_id = str(uuid.uuid4())
-        st.session_state.conversations[new_conv_id] = {
-            'title': f"Cuộc trò chuyện {len(st.session_state.conversations) + 1}",
-            'messages': [],
-            'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-        st.session_state.current_conversation = new_conv_id 
+        st.session_state.current_conversation = new_conv_id
+        save_message("System", "Conversation started", new_conv_id)
 
     st.markdown("### Lịch sử trò chuyện")
-    for conv_id, conv_data in sorted(st.session_state.conversations.items(), key=lambda x: x[1]['created_at'], reverse=True):
-        if st.button(conv_data['title'], key=f"conv_{conv_id}"):
-            st.session_state.current_conversation = conv_id  
+    conversations = get_chat_history() 
+    
+    for conv_id, created_at, title in conversations:
+        display_title = title if title else f"Cuộc trò chuyện {conv_id[:8]}"
+        if st.button(display_title, key=f"conv_{conv_id}"):
+            st.session_state.current_conversation = conv_id
 
 if st.session_state.current_conversation is None:
-    if st.session_state.conversations:
-        st.session_state.current_conversation = list(st.session_state.conversations.keys())[0]
+    conversations = get_chat_history()
+    if conversations:
+        st.session_state.current_conversation = conversations[0][0]  
     else:
         new_conv_id = str(uuid.uuid4())
-        st.session_state.conversations[new_conv_id] = {
-            'title': "Cuộc trò chuyện 1",
-            'messages': [],
-            'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
         st.session_state.current_conversation = new_conv_id
-
-current_conv = st.session_state.conversations[st.session_state.current_conversation]
+        save_message("System", "Conversation started", new_conv_id)
 
 user_input = st.text_input("Nhập câu hỏi của bạn:", key=f"input_{st.session_state.current_conversation}")
 
 if st.button("Gửi", key=f"send_{st.session_state.current_conversation}"):
     if user_input:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        current_conv['messages'].append({'sender': 'Bạn', 'message': user_input, 'timestamp': timestamp})
         save_message("Bạn", user_input, st.session_state.current_conversation)
         response = result_query(user_input)
-        current_conv['messages'].append({'sender': 'Chatbot', 'message': response, 'timestamp': timestamp})
         save_message("Chatbot", response, st.session_state.current_conversation)
 
-        if len(current_conv['messages']) == 2:
-            current_conv['title'] = user_input[:30] + "..." if len(user_input) > 30 else user_input
-
-for message in current_conv['messages']:
-    if message['sender'] == "Bạn":
-        st.markdown(f"""
-            <div class="user-message">
-                <strong>{message['sender']}:</strong> {message['message']}<br>
-                <span class="timestamp">{message['timestamp']}</span>
-            </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
-            <div class="bot-message">
-                <strong>{message['sender']}:</strong> {message['message']}<br>
-                <span class="timestamp">{message['timestamp']}</span>
-            </div>
-        """, unsafe_allow_html=True)
+messages = load_conversation_messages(st.session_state.current_conversation)
+for message in messages:
+    if message['sender'] == "System":  
+        continue
+    
+    st.markdown(f"""
+        <div class="{message['sender'].lower()}-message">
+            <strong>{message['sender']}:</strong> {message['message']}<br>
+            <span class="timestamp">{message['timestamp']}</span>
+        </div>
+    """, unsafe_allow_html=True)

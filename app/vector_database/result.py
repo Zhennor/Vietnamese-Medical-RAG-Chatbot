@@ -30,8 +30,7 @@ def result_query(original_query):
     vector_db = QdrantDB(URL_QDRANT, QDRANT_API_KEY, COLLECTION_NAME, MODEL_EMBEDDING)
     
     check_query_user = model_gemini.check_query(original_query)
-    print(type(check_query_user))
-    
+
     if check_query_user == '0':
         generated_queries = model_gemini.generate_query(original_query)
         print(generated_queries)
@@ -43,9 +42,9 @@ def result_query(original_query):
 
         unique_docs = {doc['id']: doc for doc in all_docs}.values()
         result_rerank = model_reranker.rerank_documents(original_query, list(unique_docs))
-        if result_rerank == 1:
+        if not result_rerank: 
             response = model_gemini.generate_response_link(original_query, vector_db)
-            return f"{response}"
+            return response
         else:
             response = model_gemini.generate_response(original_query, result_rerank)
             return response
