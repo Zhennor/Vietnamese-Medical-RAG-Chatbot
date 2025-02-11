@@ -202,6 +202,7 @@ async function sendMessage() {
         document.getElementById("chatContent").scrollTop = document.getElementById("chatContent").scrollHeight;
         
         await loadChatHistory();
+        
     } catch (error) {
         console.error('Error:', error);
         const errorDiv = document.createElement("div");
@@ -218,6 +219,7 @@ async function sendMessage() {
     } finally {
         sendButton.innerHTML = originalButtonContent;
         sendButton.disabled = false;
+        userInput.disabled = false;
     }
 }
 
