@@ -20,8 +20,8 @@
 
 # DEMO
 
-![Logo](image/demo1.png)
+![Logo](image/demo1.jpeg)
 
-![Logo2](image/demo2.png)
+![Logo2](image/demo2.jpeg)
 
 
