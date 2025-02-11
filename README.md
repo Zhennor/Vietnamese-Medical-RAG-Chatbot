@@ -3,7 +3,7 @@
 ## 📌 Bước 1: Clone Repository
     Sao chép repository về máy và chuyển đến thư mục của dự án:
     ```bash
-    git clone https://github.com/your-username/Vietnamese-Medical-RAG-Chatbot.git
+    git clone https://github.com/Zhennor/Vietnamese-Medical-RAG-Chatbot
     cd Vietnamese-Medical-RAG-Chatbot
 
 ## 📌Bước 2: Cài đặt thư viện từ requirements.txt
@@ -16,3 +16,12 @@
     streamlit run run_app.py --server.runOnSave=false
 
 #link data [vihealth](https://huggingface.co/datasets/itdainb/VIETNAMESE_RAG)
+
+
+# DEMO
+
+![Logo](image/demo1.png)
+
+![Logo2](image/demo2.png)
+
+
