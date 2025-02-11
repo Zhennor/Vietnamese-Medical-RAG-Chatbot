@@ -6,7 +6,7 @@ import os
 def init_db():
     """Khởi tạo database và tạo bảng chat_history nếu chưa tồn tại"""
     try:
-        conn = sqlite3.connect('chat_history.db')
+        conn = sqlite3.connect('app/database/chat_history.db')
         c = conn.cursor()
         
         c.execute('''
@@ -27,7 +27,7 @@ def init_db():
 
 def save_message(sender, message, conversation_id):
     """Lưu tin nhắn vào database"""
-    conn = sqlite3.connect('chat_history.db')
+    conn = sqlite3.connect('app/database/chat_history.db')
     c = conn.cursor()
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     c.execute('''
@@ -40,7 +40,7 @@ def save_message(sender, message, conversation_id):
 
 def get_chat_history(conversation_id=None):
     """Lấy lịch sử chat theo conversation_id hoặc danh sách các cuộc trò chuyện"""
-    conn = sqlite3.connect('chat_history.db')
+    conn = sqlite3.connect('app/database/chat_history.db')
     c = conn.cursor()
     
     if conversation_id:
@@ -70,7 +70,7 @@ def get_chat_history(conversation_id=None):
 
 def load_conversation_messages(conversation_id):
     """Load tất cả tin nhắn của một conversation"""
-    conn = sqlite3.connect('chat_history.db')
+    conn = sqlite3.connect('app/database/chat_history.db')
     c = conn.cursor()
     c.execute('''
         SELECT timestamp, sender, message 
@@ -93,7 +93,7 @@ def load_conversation_messages(conversation_id):
 def delete_conversation(conversation_id):
     """Xóa một cuộc trò chuyện và tất cả tin nhắn của nó"""
     try:
-        conn = sqlite3.connect('chat_history.db')
+        conn = sqlite3.connect('app/database/chat_history.db')
         c = conn.cursor()
         c.execute('DELETE FROM chat_history WHERE conversation_id = ?', (conversation_id,))
         conn.commit()
