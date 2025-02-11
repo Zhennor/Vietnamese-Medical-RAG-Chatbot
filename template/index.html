@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Trợ Lý Y Tế Việt Nam</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+        <link rel="stylesheet" href="../static/style.css">
+        <script src="../static/script.js"></script>
+
+    </head>
+
+    <body>
+        <div class="main">
+            <div class="main__sidebar">
+                <div class="history">
+                    <div style="padding-right: 15px;">Lịch sử trò chuyện</div>
+                    <div>
+                        <img src="../static/assets/sidebar_icon_128751.png" alt="Turn off history chat" width='30' 
+                            class="btnhisimg" title="Đóng lịch sử trò chuyện" 
+                            style="filter: brightness(0) saturate(100%) invert(100%);">
+                    </div>
+                </div>
+                <div class="coversation_list" id="conversationList">
+                    <!-- Danh sách cuộc trò chuyện sẽ được render vào đây -->
+                </div>
+                
+                <div class="newchat" onclick="startNewChat()">
+                    <img src="../static/assets/8678232_chat_new_message_communication_icon.png" 
+                        alt="Tạo chat mới" title="Tạo chat mới" width="30" 
+                        style="filter: brightness(0) saturate(100%) invert(100%);">                   
+                    <div style="padding: 10px;">Đoạn chat mới</div>
+                </div>
+            </div>
+            <div class="main__chat">
+                <div class="navbar">
+                    <button class="show-sidebar-btn">
+                        <img src="../static/assets/sidebar_icon_128751.png" 
+                            alt="Show sidebar" width='30' 
+                            style="filter: brightness(0) saturate(100%) invert(100%);">
+                    </button>
+                    Trợ Lý Y Tế Việt Nam
+                </div>
+                <div class="chat_content" id="chatContent">
+                    <div class="chat_side bot-message"> 
+                        <img src="../static/assets/chatbot_conversational_ai_virtual_assistant_automated_chat_messaging_bot_icon_260869.png" 
+                            alt="Chatbot" width="40" 
+                            style="filter: brightness(0) saturate(100%) invert(100%);">    
+                        Xin chào, tôi có thể giúp gì cho bạn?
+                    </div>
+                </div>
+                <div class="query-container">
+                    <div class="query">
+                        <input type="text" id="userInput" placeholder="Nhập văn bản..." onkeypress="handleKeyPress(event)"/>
+                        <div class="btn_send" onclick="sendMessage()">
+                            <img src="../static/assets/send_send_message_icon_245779.png" 
+                                alt="Gửi query" title="Gửi query của bạn" width="30" 
+                                style="filter: brightness(0) saturate(100%) invert(100%);">
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+    </body>
+</html>

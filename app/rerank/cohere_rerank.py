@@ -76,9 +76,9 @@ class Cohere:
             doc_embeddings = self.embedding_model.encode(doc_contents, convert_to_tensor=True)
             scores_cosine = util.pytorch_cos_sim(query_embedding, doc_embeddings).squeeze(0).cpu().numpy()
 
-            combined_scores = 0.8 * scores_cosine + 0.2 * scores_tfidf
+            combined_scores = 0.7 * scores_cosine + 0.3 * scores_tfidf
 
-            if not rerank_links and all(score < 0.4 for score in combined_scores):
+            if not rerank_links and all(score < 0.5 for score in combined_scores):
                 return 1
 
             for idx, doc in enumerate(reranked_documents):

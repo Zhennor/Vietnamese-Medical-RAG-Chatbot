@@ -55,4 +55,3 @@ def result_query(original_query):
         return model_gemini.generate_introduction(original_query)
     elif check_query_user == '3':
         return 'Xin lỗi bạn, tôi không được huấn luyện để trả lời câu hỏi này. Tôi chỉ hỗ trợ các câu hỏi liên quan đến y tế và sức khỏe.'
-

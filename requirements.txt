@@ -11,3 +11,5 @@ langchain_community==0.3.17
 langchain_qdrant==0.2.0
 langchain_huggingface==0.1.2
 fastembed-gpu==0.5.1
+fastapi==0.115.8
+uvicorn==0.34.0

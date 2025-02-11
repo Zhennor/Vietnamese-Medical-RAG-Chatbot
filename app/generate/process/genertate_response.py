@@ -33,10 +33,10 @@ class ResponseGenerator:
                 - Khi trả lời thì bắt buộc không lặp lại câu hỏi.
                 - Trả lời trực tiếp và ngắn gọn, mở đầu bằng câu khái quát ngắn thể hiện trọng tâm của câu trả lời. Ví dụ: khi hỏi "tác dụng của thuốc Aspirin là gì?" thì câu mở đầu sẽ là: "Aspirin là một loại thuốc dùng để giảm đau, hạ sốt và chống viêm..."
                 - Trả lời được tổ chức thành các mục đánh số, mỗi mục đề cập một khía cạnh chính, các ý trong cùng một mục phải liên quan đến tiêu đề mục đó, ghi trên cùng một dòng và sử dụng định dạng:  
-                    **[Số thứ tự]. Tiêu đề mục**: Nội dung giải thích chi tiết trong cùng dòng không cần xuống dòng.  
+                    [Số thứ tự]. Tiêu đề mục: Nội dung giải thích chi tiết trong cùng dòng không cần xuống dòng.  
                 - Ví dụ:  
-                    **1. Tác dụng của Aspirin**: Aspirin được sử dụng để giảm đau, hạ sốt và chống viêm.  
-                    **2. Liều lượng sử dụng**: Liều lượng của Aspirin phụ thuộc vào độ tuổi và tình trạng bệnh lý...  
+                    1. Tác dụng của Aspirin: Aspirin được sử dụng để giảm đau, hạ sốt và chống viêm.  
+                    2. Liều lượng sử dụng: Liều lượng của Aspirin phụ thuộc vào độ tuổi và tình trạng bệnh lý...  
                 3. **Sử dụng thông tin cung cấp**:  
                 - Chỉ dựa vào nội dung cung cấp. Không tự thêm thông tin bên ngoài.  
 
