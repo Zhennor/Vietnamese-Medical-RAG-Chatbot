@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from app.vector_database.result import result_query
-from db_utils import init_db, save_message, get_chat_history, load_conversation_messages, delete_conversation
+from app.database.db_utils import init_db, save_message, get_chat_history, load_conversation_messages, delete_conversation
 import uuid
 
 app = FastAPI()
