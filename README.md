@@ -13,7 +13,7 @@
 ## 📌 Bước 3: Chạy ứng dụng Streamlit
     Sau khi cài đặt xong, chạy ứng dụng bằng lệnh:
     ```bash
-    streamlit run run_app.py --server.runOnSave=false
+    uvicorn main:app --reload
 
 #link data [vihealth](https://huggingface.co/datasets/itdainb/VIETNAMESE_RAG)
 
